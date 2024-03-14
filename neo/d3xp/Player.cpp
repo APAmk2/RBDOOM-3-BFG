@@ -9660,31 +9660,25 @@ void idPlayer::CalcDamagePoints( idEntity* inflictor, idEntity* attacker, const 
 	attacker->DamageFeedback( this, inflictor, damage );
 
 	// save some from armor
+	// APAMk2: Half-Life 1 Algo
 	if( !damageDef->GetBool( "noArmor" ) )
 	{
-		float armor_protection;
+		float newDamage = damage * 0.2;
+		float armor;
+		armor = (damage - newDamage) * 0.5;
 
-		armor_protection = ( common->IsMultiplayer() ) ? g_armorProtectionMP.GetFloat() : g_armorProtection.GetFloat();
-
-		armorSave = ceil( damage * armor_protection );
-		if( armorSave >= inventory.armor )
+		// Does this use more armor than we have?
+		if (armor > inventory.armor)
 		{
+			armor = inventory.armor;
+			armor *= (1.0 / 0.5);
+			newDamage = damage - armor;
 			armorSave = inventory.armor;
 		}
-
-		if( !damage )
-		{
-			armorSave = 0;
-		}
-		else if( armorSave >= damage )
-		{
-			armorSave = damage - 1;
-			damage = 1;
-		}
 		else
-		{
-			damage -= armorSave;
-		}
+			armorSave = armor;
+
+		damage = newDamage;
 	}
 	else
 	{
