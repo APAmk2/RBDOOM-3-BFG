@@ -2040,7 +2040,8 @@ bool idWeapon::ShowCrosshair() const
 {
 // JDC: this code would never function as written, I'm assuming they wanted the following behavior
 //	return !( state == idStr( WP_RISING ) || state == idStr( WP_LOWERING ) || state == idStr( WP_HOLSTERED ) );
-	return !( status == WP_RISING || status == WP_LOWERING || status == WP_HOLSTERED || status == WP_RELOAD );
+	return !( status == WP_RISING || status == WP_LOWERING || status == WP_HOLSTERED || status == WP_RELOAD || 
+	!g_showCrosshair.GetBool() ); // Do player actually wanna see crosshair?
 }
 
 /*

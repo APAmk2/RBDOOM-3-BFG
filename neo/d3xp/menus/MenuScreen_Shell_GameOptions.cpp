@@ -78,6 +78,14 @@ void idMenuScreen_Shell_GameOptions::Initialize( idMenuHandler* data )
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_PRESS_FOCUSED, options->GetChildren().Num() );
 	options->AddChild( control );
 
+	control = new(TAG_SWF) idMenuWidget_ControlButton();
+	control->SetOptionType(OPTION_SLIDER_TOGGLE);
+	control->SetLabel("#str_swf_crosshair");
+	control->SetDataSource(&systemData, idMenuDataSource_GameSettings::GAME_FIELD_CROSSHAIR);
+	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
+	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_PRESS_FOCUSED, options->GetChildren().Num());
+	options->AddChild(control);
+
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TOGGLE );
 	control->SetLabel( "#str_swf_checkpoints" );
@@ -323,6 +331,7 @@ idMenuScreen_Shell_GameOptions::idMenuDataSource_AudioSettings::LoadData
 void idMenuScreen_Shell_GameOptions::idMenuDataSource_GameSettings::LoadData()
 {
 	fields[ GAME_FIELD_FOV ].SetInteger( g_fov.GetFloat() );
+	fields[ GAME_FIELD_CROSSHAIR ].SetBool(g_showCrosshair.GetBool());
 	fields[ GAME_FIELD_CHECKPOINTS ].SetBool( g_checkpoints.GetBool() );
 	fields[ GAME_FIELD_AUTO_SWITCH ].SetBool( ui_autoSwitch.GetBool() );
 	fields[ GAME_FIELD_AUTO_RELOAD ].SetBool( ui_autoReload.GetBool() );
@@ -344,6 +353,7 @@ void idMenuScreen_Shell_GameOptions::idMenuDataSource_GameSettings::CommitData()
 	g_fov.SetFloat( fields[ GAME_FIELD_FOV ].ToFloat() );
 	g_gun_x.SetFloat( Lerp( MIN_FOV_GUN, MAX_FOV_GUN, ( fields[ GAME_FIELD_FOV ].ToFloat() - MIN_FOV ) / ( MAX_FOV - MIN_FOV ) ) );
 
+	g_showCrosshair.SetBool( fields[ GAME_FIELD_CROSSHAIR ].ToBool() );
 	g_checkpoints.SetBool( fields[ GAME_FIELD_CHECKPOINTS ].ToBool() );
 	ui_autoSwitch.SetBool( fields[ GAME_FIELD_AUTO_SWITCH ].ToBool() );
 	ui_autoReload.SetBool( fields[ GAME_FIELD_AUTO_RELOAD ].ToBool() );
@@ -384,6 +394,11 @@ bool idMenuScreen_Shell_GameOptions::idMenuDataSource_GameSettings::IsDataChange
 {
 
 	if( fields[ GAME_FIELD_FOV ].ToInteger() != originalFields[ GAME_FIELD_FOV ].ToInteger() )
+	{
+		return true;
+	}
+
+	if ( fields[ GAME_FIELD_CROSSHAIR ].ToBool() != originalFields[ GAME_FIELD_CROSSHAIR ].ToBool() )
 	{
 		return true;
 	}
