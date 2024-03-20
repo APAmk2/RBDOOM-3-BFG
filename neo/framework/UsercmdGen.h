@@ -76,6 +76,7 @@ const int IMPULSE_28			= 28;			// quick 0
 const int IMPULSE_29			= 29;			// quick 1
 const int IMPULSE_30			= 30;			// quick 2
 const int IMPULSE_31			= 31;			// quick 3
+const int IMPULSE_32			= 32;			// Last weapon
 
 class usercmd_t
 {
@@ -184,6 +185,7 @@ typedef enum
 	UB_IMPULSE29,
 	UB_IMPULSE30,
 	UB_IMPULSE31,
+	UB_IMPULSE32,
 
 	UB_MAX_BUTTONS
 } usercmdButton_t;

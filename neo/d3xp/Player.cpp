@@ -7704,6 +7704,11 @@ void idPlayer::PerformImpulse( int impulse )
 			SelectWeapon( 18, false );
 			break;
 		}
+		case IMPULSE_32:
+		{
+			SelectWeapon(previousWeapon, false);
+			break;
+		}
 	}
 }
 

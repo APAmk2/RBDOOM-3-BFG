@@ -70,6 +70,7 @@ static bindInfo_t keyboardBinds[] =
 	{ "#str_00100185",	"_impulse10"						},	// BFG
 	{ "#str_swf_soulcube_artifact",	"_impulse12"			},	// SOULCUBE / ARTIFACT
 	{ "#str_00100187",	"_impulse16"						},	// FLASHLIGHT
+	{ "#str_swf_lastWeap",	"_impulse32"					},	// LAST WEAPON
 
 	{ "#str_04065",			""								},	// HEADING
 	{ "#str_04067",	"savegame quick"						},	// QUICK SAVE

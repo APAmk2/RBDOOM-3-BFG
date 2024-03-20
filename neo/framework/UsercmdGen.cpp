@@ -162,6 +162,7 @@ userCmdString_t	userCmdStrings[] =
 	{ "_impulse29",		UB_IMPULSE29 },
 	{ "_impulse30",		UB_IMPULSE30 },
 	{ "_impulse31",		UB_IMPULSE31 },
+	{ "_impulse32",		UB_IMPULSE32 },
 
 	{ NULL,				UB_NONE },
 };
@@ -1316,7 +1317,7 @@ void idUsercmdGenLocal::Key( int keyNum, bool down )
 		buttonState[ action ]++;
 		if( !Inhibited() )
 		{
-			if( action >= UB_IMPULSE0 && action <= UB_IMPULSE31 )
+			if( action >= UB_IMPULSE0 && action <= UB_IMPULSE32 )
 			{
 				cmd.impulse = action - UB_IMPULSE0;
 				cmd.impulseSequence++;
