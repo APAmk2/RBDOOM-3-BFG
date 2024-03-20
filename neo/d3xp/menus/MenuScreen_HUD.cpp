@@ -1303,6 +1303,12 @@ void idMenuScreen_HUD::UpdateLocation( idPlayer* player )
 	{
 		locationName->SetText( idLocalization::GetString( "#str_02911" ) );
 	}
+
+	if ( !g_showLocName.GetBool() )
+	{
+		locationName->SetText("");
+	}
+
 	locationName->SetStrokeInfo( true, 0.6f, 2.0f );
 
 }

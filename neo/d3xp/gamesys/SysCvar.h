@@ -223,6 +223,8 @@ extern idCVar	g_testModelAnimate;
 extern idCVar	g_testModelBlend;
 extern idCVar	g_flushSave;
 
+extern idCVar	g_showLocName;
+
 extern idCVar	g_enableSlowmo;
 extern idCVar	g_slowmoStepRate;
 extern idCVar	g_testFullscreenFX;
