@@ -39,6 +39,7 @@ extern idCVar r_swapInterval;
 extern idCVar s_volume_dB;
 extern idCVar r_exposure; // RB: use this to control HDR exposure or brightness in LDR mode
 extern idCVar r_lightScale;
+extern idCVar s_muteUnfocus;
 
 /*
 ========================
@@ -182,6 +183,14 @@ void idMenuScreen_Shell_SystemOptions::Initialize( idMenuHandler* data )
 	control->SetupEvents( 2, options->GetChildren().Num() );
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_SystemSettings::SYSTEM_FIELD_VOLUME );
 	options->AddChild( control );
+
+	control = new(TAG_SWF) idMenuWidget_ControlButton();
+	control->SetOptionType(OPTION_SLIDER_TEXT);
+	control->SetLabel("#str_swf_sound_mute");
+	control->SetDataSource(&systemData, idMenuDataSource_SystemSettings::SYSTEM_FIELD_SOUND_MUTE);
+	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
+	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_SystemSettings::SYSTEM_FIELD_SOUND_MUTE);
+	options->AddChild(control);
 
 	options->AddEventAction( WIDGET_EVENT_SCROLL_DOWN ).Set( new( TAG_SWF ) idWidgetActionHandler( options, WIDGET_ACTION_EVENT_SCROLL_DOWN_START_REPEATER, WIDGET_EVENT_SCROLL_DOWN ) );
 	options->AddEventAction( WIDGET_EVENT_SCROLL_UP ).Set( new( TAG_SWF ) idWidgetActionHandler( options, WIDGET_ACTION_EVENT_SCROLL_UP_START_REPEATER, WIDGET_EVENT_SCROLL_UP ) );
@@ -433,6 +442,8 @@ void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::LoadData
 	originalVsync = r_swapInterval.GetInteger();
 	originalBrightness = r_exposure.GetFloat();
 	originalVolume = s_volume_dB.GetFloat();
+	originalSoundMute = s_muteUnfocus.GetInteger();
+
 	// RB begin
 	//originalShadowMapping = r_useShadowMapping.GetInteger();
 	originalRenderMode = r_renderMode.GetInteger();
@@ -683,6 +694,13 @@ void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::AdjustFi
 			s_volume_dB.SetFloat( DB_SILENCE - ( idMath::Sqrt( clamped / 100.0f ) * DB_SILENCE ) );
 			break;
 		}
+		case SYSTEM_FIELD_SOUND_MUTE:
+		{
+			static const int numValues = 2;
+			static const int values[numValues] = { 0, 1 };
+			s_muteUnfocus.SetInteger(AdjustOption(s_muteUnfocus.GetInteger(), values, numValues, adjustAmount));
+			break;
+		}
 	}
 	cvarSystem->ClearModifiedFlags( CVAR_ARCHIVE );
 }
@@ -856,6 +874,15 @@ idSWFScriptVar idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings
 		{
 			return 100.0f * Square( 1.0f - ( s_volume_dB.GetFloat() / DB_SILENCE ) );
 		}
+		case SYSTEM_FIELD_SOUND_MUTE:
+			if (s_muteUnfocus.GetInteger() == 1)
+			{
+				return "#str_swf_enabled";
+			}
+			else
+			{
+				return "#str_swf_disabled";
+			}
 	}
 	return false;
 }
@@ -923,6 +950,11 @@ bool idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::IsDataCh
 	}
 
 	if( originalVolume != s_volume_dB.GetFloat() )
+	{
+		return true;
+	}
+
+	if ( originalSoundMute != s_muteUnfocus.GetInteger())
 	{
 		return true;
 	}

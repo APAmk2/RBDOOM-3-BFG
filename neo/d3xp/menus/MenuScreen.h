@@ -1378,6 +1378,7 @@ public:
 			// RB end
 			SYSTEM_FIELD_BRIGHTNESS,
 			SYSTEM_FIELD_VOLUME,
+			SYSTEM_FIELD_SOUND_MUTE,
 			MAX_SYSTEM_FIELDS
 		};
 
@@ -1407,6 +1408,7 @@ public:
 		int originalVsync;
 		float originalBrightness;
 		float originalVolume;
+		int originalSoundMute;
 		// RB begin
 		//int originalShadowMapping; // TODO use for quality of shadowmaps?
 		int originalRenderMode;

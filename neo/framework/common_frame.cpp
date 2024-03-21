@@ -77,6 +77,8 @@ idCVar net_drawDebugHud( "net_drawDebugHud", "0", CVAR_SYSTEM | CVAR_INTEGER, "0
 
 idCVar timescale( "timescale", "1", CVAR_SYSTEM | CVAR_FLOAT, "Number of game frames to run per render frame", 0.001f, 100.0f );
 
+idCVar s_muteUnfocus("s_muteUnfocus", "1", CVAR_ARCHIVE | CVAR_BOOL, "Mute game when window isn't focused");
+
 extern idCVar in_useJoystick;
 extern idCVar in_joystickRumble;
 
@@ -912,7 +914,7 @@ void idCommonLocal::Frame()
 			soundSystem->SetMute( false );
 		}
 		// SRS - Mute all sound output when dialog waiting or window not in focus (mutes Doom3, Classic, Cinematic Audio)
-		if( Dialog().IsDialogPausing() || session->IsSystemUIShowing() || com_pause.GetInteger() )
+		if( (Dialog().IsDialogPausing() || session->IsSystemUIShowing() || com_pause.GetInteger()) && s_muteUnfocus.GetBool() )
 		{
 			soundSystem->SetMute( true );
 		}
