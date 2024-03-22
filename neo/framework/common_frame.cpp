@@ -65,8 +65,6 @@ idCVar com_deltaTimeClamp( "com_deltaTimeClamp", "50", CVAR_INTEGER, "don't proc
 idCVar com_fixedTic( "com_fixedTic", DEFAULT_FIXED_TIC, CVAR_BOOL, "run a single game frame per render frame" );
 idCVar com_noSleep( "com_noSleep", DEFAULT_NO_SLEEP, CVAR_BOOL, "don't sleep if the game is running too fast" );
 idCVar com_smp( "com_smp", "1", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "run the game and draw code in a separate thread" );
-idCVar com_aviDemoWidth( "com_aviDemoWidth", "256", CVAR_SYSTEM, "" );
-idCVar com_aviDemoHeight( "com_aviDemoHeight", "256", CVAR_SYSTEM, "" );
 idCVar com_skipGameDraw( "com_skipGameDraw", "0", CVAR_SYSTEM | CVAR_BOOL, "" );
 
 idCVar com_sleepGame( "com_sleepGame", "0", CVAR_SYSTEM | CVAR_INTEGER, "intentionally add a sleep in the game time" );
@@ -346,16 +344,10 @@ void idCommonLocal::Draw()
 		}
 		game->Shell_Render();
 	}
-	else if( readDemo )
-	{
-		// SRS - Advance demo inside Frame() instead of Draw() to support smp mode playback
-		// AdvanceRenderDemo( true );
-		renderWorld->RenderScene( &currentDemoRenderView );
-		renderSystem->DrawDemoPics();
-	}
 	else if( mapSpawned )
 	{
 		bool gameDraw = false;
+
 		// normal drawing for both single and multi player
 		if( !com_skipGameDraw.GetBool() && Game()->GetLocalClientNum() >= 0 )
 		{
@@ -372,13 +364,6 @@ void idCommonLocal::Draw()
 		{
 			renderSystem->SetColor( colorBlack );
 			renderSystem->DrawStretchPic( 0, 0, renderSystem->GetVirtualWidth(), renderSystem->GetVirtualHeight(), 0, 0, 1, 1, whiteMaterial );
-		}
-
-		// save off the 2D drawing from the game
-		if( writeDemo )
-		{
-			renderSystem->WriteDemoPics();
-			renderSystem->WriteEndFrame();
 		}
 	}
 	else
@@ -401,6 +386,7 @@ void idCommonLocal::Draw()
 		// draw the half console / notify console on top of everything
 		console->Draw( false );
 
+		// old CRT TV simulation has to be last or it breaks the immersion
 		renderSystem->DrawCRTPostFX();
 	}
 }
@@ -676,9 +662,7 @@ void idCommonLocal::Frame()
 				gameTimeResidual += clampedDeltaMilliseconds * timescale.GetFloat();
 
 				// don't run any frames when paused
-				// jpcy: the game is paused when playing a demo, but playDemo should wait like the game does
-				// SRS - don't wait if window not in focus and playDemo itself paused
-				if( pauseGame && ( !( readDemo && !timeDemo ) || session->IsSystemUIShowing() || com_pause.GetInteger() ) )
+				if( pauseGame )
 				{
 					gameFrame++;
 					gameTimeResidual = 0;
@@ -743,12 +727,6 @@ void idCommonLocal::Frame()
 			}
 		}
 
-		// jpcy: playDemo uses the game frame wait logic, but shouldn't run any game frames
-		if( readDemo && !timeDemo )
-		{
-			numGameFrames = 0;
-		}
-
 		//--------------------------------------------
 		// It would be better to push as much of this as possible
 		// either before or after the renderSystem->SwapCommandBuffers(),
@@ -788,18 +766,6 @@ void idCommonLocal::Frame()
 
 		// send frame and mouse events to active guis
 		GuiFrameEvents();
-
-		// SRS - Advance demos inside Frame() vs. Draw() to support smp mode playback
-		// SRS - Pause playDemo (but not timeDemo) when window not in focus
-		if( readDemo && ( !( session->IsSystemUIShowing() || com_pause.GetInteger() ) || timeDemo ) )
-		{
-			AdvanceRenderDemo( true );
-			if( !readDemo )
-			{
-				// SRS - Important to return after demo playback is finished to avoid command buffer sync issues
-				return;
-			}
-		}
 
 		//--------------------------------------------
 		// Prepare usercmds and kick off the game processing
@@ -900,8 +866,7 @@ void idCommonLocal::Frame()
 		SendSnapshots();
 
 		// Render the sound system using the latest commands from the game thread
-		// SRS - Enable sound during normal playDemo playback but not during timeDemo
-		if( pauseGame && !( readDemo && !timeDemo ) )
+		if( pauseGame )
 		{
 			soundWorld->Pause();
 			soundSystem->SetPlayingSoundWorld( menuSoundWorld );

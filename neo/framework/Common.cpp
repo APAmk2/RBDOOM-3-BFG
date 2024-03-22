@@ -194,8 +194,6 @@ idCommonLocal::idCommonLocal() :
 	renderWorld = NULL;
 	soundWorld = NULL;
 	menuSoundWorld = NULL;
-	readDemo = NULL;
-	writeDemo = NULL;
 
 	gameFrame = 0;
 	gameTimeResidual = 0;
@@ -221,7 +219,6 @@ idCommonLocal::Quit
 */
 void idCommonLocal::Quit()
 {
-
 	// don't try to shutdown if we are in a recursive error
 	if( !com_errorEntered )
 	{
@@ -1782,8 +1779,7 @@ idCommonLocal::ProcessEvent
 bool idCommonLocal::ProcessEvent( const sysEvent_t* event )
 {
 	// hitting escape anywhere brings up the menu
-	// SRS - allow escape during demo playback to cancel
-	if( game && ( game->IsInGame() || readDemo ) )
+	if( game && game->IsInGame() )
 	{
 		if( event->evType == SE_KEY && event->evValue2 == 1 && ( event->evValue == K_ESCAPE || event->evValue == K_JOY9 ) )
 		{
@@ -1803,15 +1799,7 @@ bool idCommonLocal::ProcessEvent( const sysEvent_t* event )
 
 					console->Close();
 
-					// SRS - cancel demo playback and return to the main menu
-					if( readDemo )
-					{
-						LeaveGame();
-					}
-					else
-					{
-						StartMenu();
-					}
+					StartMenu();
 					return true;
 				}
 				else

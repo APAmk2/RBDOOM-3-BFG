@@ -793,37 +793,6 @@ const emptyCommand_t* idRenderSystemLocal::SwapCommandBuffers_FinishCommandBuffe
 
 /*
 =====================
-idRenderSystemLocal::WriteDemoPics
-=====================
-*/
-void idRenderSystemLocal::WriteDemoPics()
-{
-	common->WriteDemo()->WriteInt( DS_RENDER );
-	common->WriteDemo()->WriteInt( DC_GUI_MODEL );
-}
-
-/*
-=====================
-idRenderSystemLocal::WriteEndFrame
-=====================
-*/
-void idRenderSystemLocal::WriteEndFrame()
-{
-	common->WriteDemo()->WriteInt( DS_RENDER );
-	common->WriteDemo()->WriteInt( DC_END_FRAME );
-}
-
-/*
-=====================
-idRenderSystemLocal::DrawDemoPics
-=====================
-*/
-void idRenderSystemLocal::DrawDemoPics()
-{
-}
-
-/*
-=====================
 idRenderSystemLocal::GetCroppedViewport
 
 Returns the current cropped pixel coordinates
@@ -875,19 +844,6 @@ void idRenderSystemLocal::CropRenderSize( int width, int height )
 		common->Error( "CropRenderSize: bad sizes" );
 	}
 
-	if( common->WriteDemo() )
-	{
-		common->WriteDemo()->WriteInt( DS_RENDER );
-		common->WriteDemo()->WriteInt( DC_CROP_RENDER );
-		common->WriteDemo()->WriteInt( width );
-		common->WriteDemo()->WriteInt( height );
-
-		if( r_showDemo.GetBool() )
-		{
-			common->Printf( "write DC_CROP_RENDER\n" );
-		}
-	}
-
 	idScreenRect& previous = renderCrops[currentRenderCrop];
 
 	currentRenderCrop++;
@@ -920,19 +876,6 @@ void idRenderSystemLocal::CropRenderSize( int x, int y, int width, int height, b
 	if( width < 1 || height < 1 )
 	{
 		common->Error( "CropRenderSize: bad sizes" );
-	}
-
-	if( common->WriteDemo() )
-	{
-		common->WriteDemo()->WriteInt( DS_RENDER );
-		common->WriteDemo()->WriteInt( DC_CROP_RENDER );
-		common->WriteDemo()->WriteInt( width );
-		common->WriteDemo()->WriteInt( height );
-
-		if( r_showDemo.GetBool() )
-		{
-			common->Printf( "write DC_CROP_RENDER\n" );
-		}
 	}
 
 	idScreenRect& previous = renderCrops[currentRenderCrop];
@@ -979,17 +922,6 @@ void idRenderSystemLocal::UnCrop()
 	guiModel->Clear();
 
 	currentRenderCrop--;
-
-	if( common->WriteDemo() )
-	{
-		common->WriteDemo()->WriteInt( DS_RENDER );
-		common->WriteDemo()->WriteInt( DC_UNCROP_RENDER );
-
-		if( r_showDemo.GetBool() )
-		{
-			common->Printf( "write DC_UNCROP\n" );
-		}
-	}
 }
 
 /*
@@ -1006,17 +938,6 @@ void idRenderSystemLocal::CaptureRenderToImage( const char* imageName, bool clea
 	guiModel->EmitFullScreen();
 	guiModel->Clear();
 
-	if( common->WriteDemo() )
-	{
-		common->WriteDemo()->WriteInt( DS_RENDER );
-		common->WriteDemo()->WriteInt( DC_CAPTURE_RENDER );
-		common->WriteDemo()->WriteHashString( imageName );
-
-		if( r_showDemo.GetBool() )
-		{
-			common->Printf( "write DC_CAPTURE_RENDER: %s\n", imageName );
-		}
-	}
 	idImage* image = globalImages->GetImage( imageName );
 	if( image == NULL )
 	{

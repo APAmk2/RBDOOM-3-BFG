@@ -299,15 +299,16 @@ float idConsoleLocal::DrawFPS( float y )
 	const uint64 rendererBackEndTime = commonLocal.GetRendererBackEndMicroseconds();
 	const uint64 rendererShadowsTime = commonLocal.GetRendererShadowsMicroseconds();
 	const uint64 rendererGPUTime = commonLocal.GetRendererGPUMicroseconds();
-	const uint64 rendererGPUEarlyZTime = commonLocal.GetRendererGpuEarlyZMicroseconds();
+	const uint64 rendererGPUEarlyZTime = commonLocal.GetRendererGpuBeginDrawingMicroseconds() + commonLocal.GetRendererGpuEarlyZMicroseconds() + commonLocal.GetRendererGpuGeometryMicroseconds();
 	const uint64 rendererGPU_SSAOTime = commonLocal.GetRendererGpuSSAOMicroseconds();
 	const uint64 rendererGPU_SSRTime = commonLocal.GetRendererGpuSSRMicroseconds();
 	const uint64 rendererGPUAmbientPassTime = commonLocal.GetRendererGpuAmbientPassMicroseconds();
 	const uint64 rendererGPUShadowAtlasTime = commonLocal.GetRendererGpuShadowAtlasPassMicroseconds();
 	const uint64 rendererGPUInteractionsTime = commonLocal.GetRendererGpuInteractionsMicroseconds();
-	const uint64 rendererGPUShaderPassesTime = commonLocal.GetRendererGpuShaderPassMicroseconds();
-	const uint64 rendererGPU_TAATime = commonLocal.GetRendererGpuTAAMicroseconds();
-	const uint64 rendererGPUPostProcessingTime = commonLocal.GetRendererGpuPostProcessingMicroseconds();
+	const uint64 rendererGPUShaderPassesTime = commonLocal.GetRendererGpuShaderPassMicroseconds() + commonLocal.GetRendererGpuFogAllLightsMicroseconds() + commonLocal.GetRendererGpuShaderPassPostMicroseconds() + commonLocal.GetRendererGpuDrawGuiMicroseconds();
+	const uint64 rendererGPU_TAATime = commonLocal.GetRendererGpuMotionVectorsMicroseconds() + commonLocal.GetRendererGpuTAAMicroseconds();
+	const uint64 rendererGPUToneMapPassTime = commonLocal.GetRendererGpuToneMapPassMicroseconds();
+	const uint64 rendererGPUPostProcessingTime = commonLocal.GetRendererGpuPostProcessingMicroseconds() + commonLocal.GetRendererGpuCrtPostProcessingMicroseconds();
 
 	// SRS - Calculate max fps and max frame time based on glConfig.displayFrequency if vsync enabled and lower than engine Hz, otherwise use com_engineHz_latched
 	const int maxFPS = ( r_swapInterval.GetInteger() > 0 && glConfig.displayFrequency > 0 ? std::min( glConfig.displayFrequency, int( com_engineHz_latched ) ) : com_engineHz_latched );
@@ -344,7 +345,7 @@ float idConsoleLocal::DrawFPS( float y )
 	{
 		// start smaller
 		int32 statsWindowWidth = 320;
-		int32 statsWindowHeight = 315;
+		int32 statsWindowHeight = 330;
 
 		if( com_showFPS.GetInteger() > 2 )
 		{
@@ -375,6 +376,7 @@ float idConsoleLocal::DrawFPS( float y )
 		static ImVec4 colorMdGrey	= ImVec4( 0.50f, 0.50f, 0.50f, 1.00f );
 		static ImVec4 colorDkGrey	= ImVec4( 0.25f, 0.25f, 0.25f, 1.00f );
 		static ImVec4 colorGold		= ImVec4( 0.68f, 0.63f, 0.36f, 1.00f );
+		static ImVec4 colorPastelMagenta = ImVec4( 1.0f, 0.5f, 1.0f, 1.00f );
 
 		ImGui::Begin( "Performance Stats" );
 
@@ -449,7 +451,8 @@ float idConsoleLocal::DrawFPS( float y )
 
 		ImGui::TextColored( colorCyan, "API: %s, AA[%i, %i]: %s, %s", API, width, height, aaMode, resolutionText.c_str() );
 
-		ImGui::TextColored( colorGold, "Device: %s, Memory: %i MB", deviceManager->GetRendererString(), commonLocal.GetRendererGpuMemoryMB() );
+		ImGui::TextColored( colorGold, "Device: %s", deviceManager->GetRendererString() );
+		ImGui::TextColored( colorPastelMagenta, "VRAM Usage: %llu MB", commonLocal.GetRendererGpuMemoryMB() );
 
 		ImGui::TextColored( colorLtGrey, "GENERAL: views:%i draws:%i tris:%i",
 							commonLocal.stats_frontend.c_numViews,
@@ -525,11 +528,12 @@ float idConsoleLocal::DrawFPS( float y )
 		ImGui::TextColored( rendererGPUShaderPassesTime > maxTime ? colorRed : colorWhite,	"                    Shader Pass:  %5llu us", rendererGPUShaderPassesTime );
 #endif
 		ImGui::TextColored( rendererGPU_TAATime > maxTime ? colorRed : colorWhite,			"                    TAA:          %5llu us", rendererGPU_TAATime );
+		//ImGui::TextColored( rendererGPUToneMapPassTime > maxTime ? colorRed : colorWhite,	"                    ToneMap:      %5llu us", rendererGPUToneMapPassTime );
 		ImGui::TextColored( rendererGPUPostProcessingTime > maxTime ? colorRed : colorWhite, "                    PostFX:       %5llu us", rendererGPUPostProcessingTime );
 		ImGui::TextColored( frameBusyTime > maxTime || rendererGPUTime > maxTime ? colorRed : colorWhite, "Total:   %5lld us   Total:        %5lld us", frameBusyTime, rendererGPUTime );
 		ImGui::TextColored( colorWhite,														"Idle:    %5lld us   Idle:         %5lld us", frameIdleTime, rendererGPUIdleTime );
 		// SRS - Show CPU and GPU overall usage statistics
-		//ImGui::TextColored( colorWhite,														"Usage:     %3.0f %%    Usage:          %3.0f %%", cpuUsage, gpuUsage );
+		//ImGui::TextColored( colorWhite,														"Frame:     %3.0f %%    Frame:          %3.0f %%", cpuUsage, gpuUsage );
 
 		ImGui::End();
 	}

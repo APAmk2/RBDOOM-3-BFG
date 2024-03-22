@@ -149,15 +149,24 @@ struct backEndCounters_t
 
 	uint64	cpuTotalMicroSec;		// total microseconds for backend run
 	uint64	cpuShadowMicroSec;
+	uint64	gpuBeginDrawingMicroSec;
 	uint64	gpuDepthMicroSec;
+	uint64	gpuGeometryMicroSec;
 	uint64	gpuScreenSpaceAmbientOcclusionMicroSec;
 	uint64	gpuScreenSpaceReflectionsMicroSec;
 	uint64	gpuAmbientPassMicroSec;
 	uint64	gpuShadowAtlasPassMicroSec;
 	uint64	gpuInteractionsMicroSec;
 	uint64	gpuShaderPassMicroSec;
+	uint64	gpuFogAllLightsMicroSec;
+	uint64	gpuBloomMicroSec;
+	uint64	gpuShaderPassPostMicroSec;
+	uint64	gpuMotionVectorsMicroSec;
 	uint64	gpuTemporalAntiAliasingMicroSec;
+	uint64	gpuToneMapPassMicroSec;
 	uint64	gpuPostProcessingMicroSec;
+	uint64	gpuDrawGuiMicroSec;
+	uint64	gpuCrtPostProcessingMicroSec;
 	uint64	gpuMicroSec;
 };
 // RB end
@@ -307,13 +316,6 @@ public:
 	virtual void				DrawBigStringExt( int x, int y, const char* string, const idVec4& setColor, bool forceColor ) = 0;
 
 	virtual void			DrawCRTPostFX() = 0; // RB
-
-	// dump all 2D drawing so far this frame to the demo file
-	virtual void			WriteDemoPics() = 0;
-	virtual void			WriteEndFrame() = 0;
-
-	// draw the 2D pics that were saved out with the current demo frame
-	virtual void			DrawDemoPics() = 0;
 
 	// Performs final closeout of any gui models being defined.
 	//
