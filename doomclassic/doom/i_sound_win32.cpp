@@ -351,7 +351,14 @@ int I_StartSound2( int id, int player, mobj_t* origin, mobj_t* listener_origin, 
 	sound->m_pSourceVoice->SetVolume( x_SoundVolume );
 
 	// Set voice pitch
-	sound->m_pSourceVoice->SetFrequencyRatio( 1 + ( ( float )pitch - 128.f ) / 95.f );
+	if (s_volume_pitching.GetBool())
+	{
+		sound->m_pSourceVoice->SetFrequencyRatio(1 + ((float)pitch - 128.f) / 95.f);
+	}
+	else
+	{
+		sound->m_pSourceVoice->SetFrequencyRatio(1);
+	}
 
 	// Set initial spatialization
 	if( origin && origin != listener_origin )

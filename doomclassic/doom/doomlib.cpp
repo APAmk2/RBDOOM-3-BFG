@@ -42,6 +42,7 @@ If you have questions concerning this license or the applicable additional terms
 // The range is from 0 to 15, which matches the setting in vanilla DOOM.
 idCVar s_volume_sound( "s_volume_sound", "8", CVAR_ARCHIVE | CVAR_INTEGER, "sound volume", 0, 15 );
 idCVar s_volume_midi( "s_volume_midi", "8", CVAR_ARCHIVE | CVAR_INTEGER, "music volume", 0, 15 );
+idCVar s_volume_pitching( "s_volume_pitching", "0", CVAR_ARCHIVE | CVAR_BOOL, "volume pitching", 0, 1 );
 idCVar m_show_messages( "m_show_messages", "1", CVAR_ARCHIVE | CVAR_INTEGER, "show messages", 0, 1 );
 idCVar m_inDemoMode( "m_inDemoMode", "1", CVAR_INTEGER, "in demo mode", 0, 1 );
 

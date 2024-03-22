@@ -47,6 +47,7 @@ class idUserCmdMgr;
 
 extern idCVar s_volume_sound;
 extern idCVar s_volume_midi;
+extern idCVar s_volume_pitching;
 extern idCVar m_show_messages;
 extern idCVar m_inDemoMode;
 struct rumble_t
