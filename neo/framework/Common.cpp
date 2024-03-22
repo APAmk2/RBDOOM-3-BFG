@@ -121,7 +121,7 @@ idCommonLocal	commonLocal;
 idCommon* 		common = &commonLocal;
 
 // RB: defaulted this to 1 because we don't have a sound for the intro .bik video
-idCVar com_skipIntroVideos( "com_skipIntroVideos", "1", CVAR_BOOL , "skips intro videos" );
+idCVar com_skipIntroVideos( "com_skipIntroVideos", "0", CVAR_BOOL , "skips intro videos" );
 
 // For doom classic
 struct Globals;
@@ -1326,17 +1326,10 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		if( showVideo )
 		{
 			RenderBink( "video\\loadvideo.bik" );
-			RenderSplash();
-			RenderSplash();
 		}
 		else if( showSplash )
 		{
 			idLib::Printf( "Skipping Intro Videos!\n" );
-			// display the legal splash screen
-			// No clue why we have to render this twice to show up...
-			RenderSplash();
-			// SRS - OSX needs this for some OpenGL drivers, otherwise renders leftover image before splash
-			RenderSplash();
 		}
 
 		int legalStartTime = Sys_Milliseconds();
